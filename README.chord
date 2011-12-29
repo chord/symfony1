@@ -1,0 +1,28 @@
+Changes made to symfony
+=======================
+
+This document describes the changes made.
+
+mdDoctrinePlugin
+----------------
+
+- in /lib/plugins/sfDoctrinePlugin/lib/database/sfDoctrineConnectionProfiler.class.php
+  - inserted at the beginning of fixParams() to avoid notices/warnings:
+
+    if (!is_array($params))
+    {
+      return array();
+    }
+
+
+- in /lib/plugins/sfDoctrinePlugin/lib/record/sfDoctrineRecordI18nFilter.class.php
+  - line 54 changed to:
+
+    if (isset($record['Translation'][$culture]) && '' != $record['Translation'][$culture][$name])
+
+
+mdPropelPlugin
+--------------
+
+- removed the plugin
+

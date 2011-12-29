@@ -193,6 +193,11 @@ class sfDoctrineConnectionProfiler extends Doctrine_Connection_Profiler
    */
   static public function fixParams($params)
   {
+    if (!is_array($params))
+    {
+      return array();
+    }
+
     foreach ($params as $key => $param)
     {
       if (strlen($param) >= 255)
