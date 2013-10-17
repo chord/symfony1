@@ -3,6 +3,12 @@ Changes made to symfony
 
 This document describes the changes made.
 
+autoload
+--------
+
+- The autoloader supports loading traits with PHP >= 5.4.0
+
+
 mdDoctrinePlugin
 ----------------
 
