@@ -26,6 +26,7 @@ class sfSimpleAutoload
     $instance   = null;
 
   protected
+    $trait        = false,
     $cacheFile    = null,
     $cacheLoaded  = false,
     $cacheChanged = false,
@@ -36,6 +37,8 @@ class sfSimpleAutoload
 
   protected function __construct($cacheFile = null)
   {
+    $this->trait = version_compare(PHP_VERSION, '5.4.0', '>=');
+
     if (null !== $cacheFile)
     {
       $this->cacheFile = $cacheFile;
@@ -110,7 +113,7 @@ class sfSimpleAutoload
     $class = strtolower($class);
 
     // class already exists
-    if (class_exists($class, false) || interface_exists($class, false))
+    if (class_exists($class, false) || interface_exists($class, false) || ($this->trait && trait_exists($class, false)))
     {
       return true;
     }
@@ -286,7 +289,9 @@ class sfSimpleAutoload
       $this->cacheChanged = true;
     }
 
-    preg_match_all('~^\s*(?:abstract\s+|final\s+)?(?:class|interface)\s+(\w+)~mi', file_get_contents($file), $classes);
+    $trait = $this->trait ? '|trait' : '';
+
+    preg_match_all('~^\s*(?:abstract\s+|final\s+)?(?:class|interface'.$trait.')\s+(\w+)~mi', file_get_contents($file), $classes);
     foreach ($classes[1] as $class)
     {
       $this->classes[strtolower($class)] = $file;

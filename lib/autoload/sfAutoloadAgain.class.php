@@ -22,6 +22,7 @@ class sfAutoloadAgain
     $instance = null;
 
   protected
+    $trait      = false,
     $registered = false,
     $reloaded   = false;
 
@@ -45,6 +46,7 @@ class sfAutoloadAgain
    */
   protected function __construct()
   {
+    $this->trait = version_compare(PHP_VERSION, '5.4.0', '>=');
   }
 
   /**
@@ -88,7 +90,7 @@ class sfAutoloadAgain
       // since we're rearranged things, call the chain again
       spl_autoload_call($class);
 
-      return class_exists($class, false) || interface_exists($class, false);
+      return class_exists($class, false) || interface_exists($class, false) || ($this->trait && trait_exists($class, false));
     }
 
     $autoload = sfAutoload::getInstance();

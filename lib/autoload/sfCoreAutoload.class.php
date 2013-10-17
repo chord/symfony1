@@ -32,10 +32,12 @@ class sfCoreAutoload
     $instance   = null;
 
   protected
+    $trait   = false,
     $baseDir = null;
 
   protected function __construct()
   {
+    $this->trait = version_compare(PHP_VERSION, '5.4.0', '>=');
     $this->baseDir = realpath(dirname(__FILE__).'/..');
   }
 
@@ -163,7 +165,7 @@ class sfCoreAutoload
       $class = basename($file, false === strpos($file, '.class.php') ? '.php' : '.class.php');
 
       $contents = file_get_contents($file);
-      if (false !== stripos($contents, 'class '.$class) || false !== stripos($contents, 'interface '.$class))
+      if (false !== stripos($contents, 'class '.$class) || false !== stripos($contents, 'interface '.$class) || ($this->trait && false !== stripos($contents, 'trait '.$class)))
       {
         $classes .= sprintf("    '%s' => '%s',\n", strtolower($class), substr(str_replace($libDir, '', $file), 1));
       }

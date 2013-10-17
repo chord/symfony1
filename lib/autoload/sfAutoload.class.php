@@ -26,11 +26,13 @@ class sfAutoload
     $instance   = null;
 
   protected
+    $trait = false,
     $overriden = array(),
     $classes   = array();
 
   protected function __construct()
   {
+    $this->trait = version_compare(PHP_VERSION, '5.4.0', '>=');
   }
 
   /**
@@ -175,7 +177,7 @@ class sfAutoload
     $class = strtolower($class);
 
     // class already exists
-    if (class_exists($class, false) || interface_exists($class, false))
+    if (class_exists($class, false) || interface_exists($class, false) || ($this->trait && trait_exists($class, false)))
     {
       return true;
     }
