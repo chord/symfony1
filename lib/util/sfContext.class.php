@@ -536,15 +536,16 @@ class sfContext implements ArrayAccess
    */
   public function filterTemplateParameters(sfEvent $event, $parameters)
   {
-    $parameters['sf_context']  = $this;
-    $parameters['sf_request']  = $this->factories['request'];
-    $parameters['sf_params']   = $this->factories['request']->getParameterHolder();
-    $parameters['sf_response'] = $this->factories['response'];
-    $parameters['sf_user']     = $this->factories['user'];
+    $parameters['sf_context']       = $this;
+    $parameters['sf_request']       = $this->factories['request'];
+    $parameters['sf_params']        = $this->factories['request']->getParameterHolder();
+    $parameters['sf_response']      = $this->factories['response'];
+    $parameters['sf_user']          = $this->factories['user'];
+    $parameters['sf_configuration'] = $this->getConfiguration();
 
     return $parameters;
   }
-  
+
   /**
    * Calls methods defined via sfEventDispatcher.
    *
