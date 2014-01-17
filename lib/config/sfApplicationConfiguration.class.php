@@ -345,6 +345,27 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
     {
       $dirs = array();
 
+      // if the module is overridden add the child module before the origin one
+      $childModuleName = $this->resolveModule($moduleName);
+      if ($childModuleName != $moduleName)
+      {
+        $dirs[sfConfig::get('sf_app_module_dir').'/'.$childModuleName.'/actions'] = false; // application
+
+        foreach ($this->getPluginPaths() as $path)
+        {
+          if (is_dir($dir = $path.'/modules/'.$childModuleName.'/actions'))
+          {
+            $dirs[$dir] = true; // plugins
+          }
+        }
+
+        if (is_dir($dir = $this->getSymfonyLibDir().'/controller/'.$childModuleName.'/actions'))
+        {
+          $dirs[$dir] = true; // core modules
+        }
+      }
+
+      // the original implementation
       $dirs[sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/actions'] = false; // application
 
       foreach ($this->getPluginPaths() as $path)
@@ -377,6 +398,15 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
   {
     $dirs = array();
 
+    $childModuleName = $this->resolveModule($moduleName);
+    if ($childModuleName != $moduleName)
+    {
+      $dirs[] = sfConfig::get('sf_app_module_dir').'/'.$childModuleName.'/lib';                  // application
+      $dirs = array_merge($dirs, $this->getPluginSubPaths('/modules/'.$childModuleName.'/lib')); // plugins
+      $dirs[] = $this->getSymfonyLibDir().'/controller/'.$childModuleName.'/lib';                // core modules
+      $dirs[] = sfConfig::get('sf_module_cache_dir').'/auto'.ucfirst($childModuleName.'/lib');   // generated templates in cache
+    }
+
     $dirs[] = sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/lib';                  // application
     $dirs = array_merge($dirs, $this->getPluginSubPaths('/modules/'.$moduleName.'/lib')); // plugins
     $dirs[] = $this->getSymfonyLibDir().'/controller/'.$moduleName.'/lib';                // core modules
@@ -395,6 +425,15 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
   public function getTemplateDirs($moduleName)
   {
     $dirs = array();
+
+    $childModuleName = $this->resolveModule($moduleName);
+    if ($childModuleName != $moduleName)
+    {
+      $dirs[] = sfConfig::get('sf_app_module_dir').'/'.$childModuleName.'/templates';                  // application
+      $dirs = array_merge($dirs, $this->getPluginSubPaths('/modules/'.$childModuleName.'/templates')); // plugins
+      $dirs[] = $this->getSymfonyLibDir().'/controller/'.$childModuleName.'/templates';                // core modules
+      $dirs[] = sfConfig::get('sf_module_cache_dir').'/auto'.ucfirst($childModuleName.'/templates');   // generated templates in cache
+    }
 
     $dirs[] = sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/templates';                  // application
     $dirs = array_merge($dirs, $this->getPluginSubPaths('/modules/'.$moduleName.'/templates')); // plugins
@@ -417,6 +456,14 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
 
     if ($moduleName)
     {
+      $childModuleName = $this->resolveModule($moduleName);
+      if ($childModuleName != $moduleName)
+      {
+        $dirs[] = sfConfig::get('sf_app_module_dir').'/'.$childModuleName.'/lib/helper'; // child module
+
+        $dirs = array_merge($dirs, $this->getPluginSubPaths('/modules/'.$childModuleName.'/lib/helper'));
+      }
+
       $dirs[] = sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/lib/helper'; // module
 
       $dirs = array_merge($dirs, $this->getPluginSubPaths('/modules/'.$moduleName.'/lib/helper'));
@@ -623,6 +670,11 @@ abstract class sfApplicationConfiguration extends ProjectConfiguration
    */
   public function loadHelpers($helpers, $moduleName = '')
   {
+    if ('' != $moduleName)
+    {
+      $moduleName = $this->resolveModule($moduleName);
+    }
+
     foreach ((array) $helpers as $helperName)
     {
       if (isset(self::$loadedHelpers[$helperName]))

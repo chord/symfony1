@@ -26,7 +26,8 @@ class sfProjectConfiguration
     $pluginPaths           = array(),
     $overriddenPluginPaths = array(),
     $pluginConfigurations  = array(),
-    $pluginsLoaded         = false;
+    $pluginsLoaded         = false,
+    $overriddenModules     = array();
 
   static protected
     $active = null;
@@ -525,6 +526,45 @@ class sfProjectConfiguration
     }
 
     return $this->pluginConfigurations[$name];
+  }
+
+  /**
+   * Overrides a module by another module.
+   *
+   * @param string $moduleName    Module name that is overridden
+   * @param string $newModuleName Module name that overrides the $moduleName
+   */
+  public function overrideModule($moduleName, $newModuleName)
+  {
+    $moduleNameCanonical = strtolower($moduleName);
+
+    if (isset($this->overriddenModules[$moduleNameCanonical]))
+    {
+      throw new InvalidArgumentException(sprintf('The module "%s" is already overridden by module "%s".', $moduleName, $this->overriddenModules[$moduleNameCanonical]));
+    }
+
+    $this->overriddenModules[$moduleNameCanonical] = $newModuleName;
+  }
+
+  /**
+   * Resolves a module name.
+   *
+   * If the module was overridden before it will return the new module name.
+   *
+   * @param string $moduleName Module name to resolve
+   *
+   * @return string Resolved module name
+   */
+  public function resolveModule($moduleName)
+  {
+    $moduleNameCanonical = strtolower($moduleName);
+
+    if (isset($this->overriddenModules[$moduleNameCanonical]))
+    {
+      return $this->overriddenModules[$moduleNameCanonical];
+    }
+
+    return $moduleName;
   }
 
   /**
