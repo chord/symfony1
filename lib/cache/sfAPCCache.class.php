@@ -95,7 +95,7 @@ class sfAPCCache extends sfCache
   {
     if (sfCache::ALL === $mode)
     {
-      return apc_clear_cache('user');
+      return extension_loaded('apcu') ? apc_clear_cache() : apc_clear_cache('user');
     }
   }
 
