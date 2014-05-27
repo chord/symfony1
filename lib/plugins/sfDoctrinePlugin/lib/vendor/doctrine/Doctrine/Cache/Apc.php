@@ -108,7 +108,12 @@ class Doctrine_Cache_Apc extends Doctrine_Cache_Driver
         $keys = array();
 
         foreach ($ci['cache_list'] as $entry) {
-          $keys[] = $entry['info'];
+          if (isset($entry['key'])) {
+              // compatibility with PHP 5.5
+              $keys[] = $entry['key'];
+          } else {
+              $keys[] = $entry['info'];
+          }
         }
         return $keys;
     }
