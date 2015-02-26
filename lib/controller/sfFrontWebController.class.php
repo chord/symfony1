@@ -34,6 +34,8 @@ class sfFrontWebController extends sfWebController
       // reinitialize filters (needed for unit and functional tests)
       sfFilter::$filterCalled = array();
 
+      $this->dispatcher->notify(new sfEvent($this, 'controller.dispatch'));
+
       // determine our module and action
       $request    = $this->context->getRequest();
       $moduleName = $request->getParameter('module');

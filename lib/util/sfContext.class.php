@@ -89,6 +89,8 @@ class sfContext implements ArrayAccess
 
     // register our shutdown function
     register_shutdown_function(array($this, 'shutdown'));
+
+    $this->dispatcher->notify(new sfEvent($this, 'context.initialized'));
   }
 
   /**
