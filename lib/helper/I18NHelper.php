@@ -70,7 +70,7 @@ function format_number_choice($text, $args = array(), $number, $catalogue = 'mes
 
   if ($retval === false)
   {
-    if (sfConfig::get('sf_i18n_throw'))
+    if (!sfConfig::get('sf_i18n_silence_exceptions'))
     {
       throw new sfException(sprintf('Unable to parse your choice "%s".', $translated));
     }
